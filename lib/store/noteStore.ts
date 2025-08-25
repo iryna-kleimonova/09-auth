@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CreateNotePayload } from '../api';
+import { CreateNotePayload } from '../api/clientApi';
 import { NoteTag } from '@/types/note';
 
 export const initialDraft: CreateNotePayload = {
