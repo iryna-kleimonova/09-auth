@@ -33,7 +33,7 @@ type CheckSessionRequest = {
 
 export type RegisterRequest = {
   email: string;
-  username: string;
+  password: string;
 };
 
 export type LoginRequest = {
@@ -104,4 +104,13 @@ export const getMe = async () => {
 export const logout = async () => {
   const { data } = await api.post('/auth/logout');
   return data;
+};
+
+interface UpdateMeRequest {
+  username: string;
+}
+
+export const updateMe = async (data: UpdateMeRequest) => {
+  const res = await api.patch<User>('/users/me', data);
+  return res.data;
 };

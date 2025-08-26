@@ -3,10 +3,11 @@ import {
   dehydrate,
   QueryClient,
 } from '@tanstack/react-query';
-import { fetchServerNotes as fetchNotes } from '@/lib/api/serverApi';
+import { checkServerSession, fetchServerNotes } from '@/lib/api/serverApi';
 import NotesClient from './Notes.client';
 import { NoteTag } from '@/types/note';
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 type Props = {
   params: Promise<{ slug?: string[] }>;
@@ -33,20 +34,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function NotesPage({ params }: Props) {
-  const slug = (await params).slug?.[0];
+  let tag: NoteTag | undefined;
+  let initialNotes: Awaited<ReturnType<typeof fetchServerNotes>>;
 
-  const tag =
-    !slug || slug.toLowerCase() === 'all' ? undefined : (slug as NoteTag);
+  try {
+    const slug = (await params).slug?.[0];
+
+    const tag =
+      !slug || slug.toLowerCase() === 'all' ? undefined : (slug as NoteTag);
+
+    initialNotes = await fetchServerNotes({
+      page: 1,
+      perPage: 12,
+      search: '',
+      tag,
+    });
+  } catch {
+    redirect('/sign-in');
+  }
 
   const queryClient = new QueryClient();
-
-  const initialNotes = await fetchNotes({
-    page: 1,
-    perPage: 12,
-    search: '',
-    tag,
-  });
-
   queryClient.setQueryData(['notes', 1, '', tag ?? 'all'], initialNotes);
 
   return (

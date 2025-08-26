@@ -2,7 +2,7 @@
 
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { fetchServerNotes } from '@/lib/api/serverApi';
+import { fetchNotes } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
@@ -32,7 +32,7 @@ export default function NotesClient({
   const { data = initialNotes } = useQuery({
     queryKey: ['notes', page, debouncedSearch, initialTag ?? 'All'],
     queryFn: () =>
-      fetchServerNotes({
+      fetchNotes({
         page,
         perPage: 12,
         search: debouncedSearch,
