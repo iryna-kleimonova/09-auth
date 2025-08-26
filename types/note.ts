@@ -11,5 +11,5 @@ export type NoteTag = 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
 
 export interface NotesResponse {
   data: Note[];
-  total: number;
+  totalPages: number;
 }

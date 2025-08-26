@@ -1,4 +1,4 @@
-import type { Note } from '../../types/note';
+import type { Note, NoteTag } from '../../types/note';
 import { User } from '@/types/user';
 import { api } from './api';
 
@@ -19,13 +19,27 @@ export interface FetchNotesResponse {
 export interface CreateNotePayload {
   title: string;
   content: string;
-  tag: Note['tag'];
+  tag: NoteTag;
 }
 
-interface RawFetchNotesResponse {
+export interface RawFetchNotesResponse {
   notes: Note[];
   totalPages: number;
 }
+
+type CheckSessionRequest = {
+  success: boolean;
+};
+
+export type RegisterRequest = {
+  email: string;
+  username: string;
+};
+
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
 
 export const fetchNotes = async (
   params: FetchNotesParams = {}
@@ -36,7 +50,7 @@ export const fetchNotes = async (
     params: {
       page,
       perPage,
-      ...(search !== '' && { search: search }),
+      ...(search && { search }),
       ...(tag && { tag }),
     },
   });
@@ -67,29 +81,14 @@ export const fetchNoteById = async (id: string) => {
   return res.data;
 };
 
-export type RegisterRequest = {
-  email: string;
-  password: string;
-  username: string;
-};
-
 export const register = async (data: RegisterRequest) => {
   const res = await api.post<User>('/auth/register', data);
   return res.data;
 };
 
-export type LoginRequest = {
-  email: string;
-  password: string;
-};
-
 export const login = async (data: LoginRequest) => {
   const res = await api.post<User>('/auth/login', data);
   return res.data;
-};
-
-type CheckSessionRequest = {
-  success: boolean;
 };
 
 export const checkSession = async () => {
@@ -98,10 +97,11 @@ export const checkSession = async () => {
 };
 
 export const getMe = async () => {
-  const { data } = await api.get<User>('/auth/me');
+  const { data } = await api.get<User>('/users/me');
   return data;
 };
 
-export const logout = async (): Promise<void> => {
-  await api.post('/auth/logout');
+export const logout = async () => {
+  const { data } = await api.post('/auth/logout');
+  return data;
 };

@@ -1,4 +1,5 @@
 'use client';
+
 import css from '@/components/SignInPage/SignInPage.module.css';
 import { ApiError } from '@/lib/api/api';
 import { login, LoginRequest } from '@/lib/api/clientApi';
@@ -14,9 +15,9 @@ const SignIn = () => {
   const handleSubmit = async (formData: FormData) => {
     try {
       const formValues = Object.fromEntries(formData) as LoginRequest;
-      const res = await login(formValues);
-      if (res) {
-        setUser(res);
+      const user = await login(formValues);
+      if (user) {
+        setUser(user);
         router.push('/profile');
       } else {
         setError('Invalid email or password');
@@ -63,7 +64,7 @@ const SignIn = () => {
           </button>
         </div>
 
-        {error && <p>{error}</p>}
+        {error && <p className={css.error}>{error}</p>}
       </form>
     </main>
   );
