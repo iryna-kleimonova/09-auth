@@ -13,14 +13,16 @@ const SignUp = () => {
   const [error, setError] = useState('');
   const setUser = useAuthStore((state) => state.setUser);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const values = Object.fromEntries(formData) as RegisterRequest;
+  const handleSubmit = async (formData: FormData) => {
+    const formValues = Object.fromEntries(formData) as RegisterRequest;
     try {
-      const res = await register(values);
-      setUser(res);
-      router.push('/profile');
+      const res = await register(formValues);
+      if (res) {
+        setUser(res);
+        router.push('/profile');
+      } else {
+        setError('Invalid email or password');
+      }
     } catch (error) {
       setError(
         (error as ApiError).response?.data?.error ??
@@ -32,7 +34,7 @@ const SignUp = () => {
 
   return (
     <main className={css.mainContent}>
-      <form className={css.form} onSubmit={handleSubmit}>
+      <form className={css.form} action={handleSubmit}>
         <h1 className={css.formTitle}>Sign up</h1>
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
